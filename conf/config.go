@@ -3,6 +3,7 @@ package conf
 import (
 	"gin_mall_tmp/dao"
 	"gopkg.in/ini.v1"
+	"os"
 	"strings"
 )
 
@@ -45,12 +46,43 @@ func Init() {
 	LoadEmail(file)
 	LoadPhotoPath(file)
 
+	overrideWithEnv()
+
 	//mysql 读(8) 主
 	pathRead := strings.Join([]string{DbUser, ":", DbPassword, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8mb4&parseTime=True&loc=Local"}, "")
 	//mysql 写(2) 从  主从复制
 	pathWrite := strings.Join([]string{DbUser, ":", DbPassword, "@tcp(", DbHost, ":", DbPort, ")/", DbName, "?charset=utf8mb4&parseTime=True&loc=Local"}, "")
 
 	dao.Database(pathRead, pathWrite)
+}
+
+// 环境变量覆盖函数
+func overrideWithEnv() {
+	// MySQL 环境变量覆盖
+	if os.Getenv("MYSQL_PASSWORD") != "" {
+		DbPassword = os.Getenv("MYSQL_PASSWORD")
+	}
+	if os.Getenv("MYSQL_HOST") != "" {
+		DbHost = os.Getenv("MYSQL_HOST")
+	}
+
+	// Redis 环境变量覆盖
+	if os.Getenv("REDIS_PASSWORD") != "" {
+		RedisPassword = os.Getenv("REDIS_PASSWORD")
+	}
+
+	// 邮箱环境变量覆盖
+	if os.Getenv("SMTP_PASSWORD") != "" {
+		SmptPass = os.Getenv("SMTP_PASSWORD")
+	}
+	if os.Getenv("SMTP_EMAIL") != "" {
+		SmptEmail = os.Getenv("SMTP_EMAIL")
+	}
+
+	// 主机地址覆盖
+	if os.Getenv("HOST_URL") != "" {
+		Host = os.Getenv("HOST_URL")
+	}
 }
 func LoadServer(file *ini.File) {
 	AppModel = file.Section("service").Key("AppModel").String()

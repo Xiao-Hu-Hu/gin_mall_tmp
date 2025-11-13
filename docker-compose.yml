@@ -11,6 +11,7 @@ services:
       - MYSQL_DATABASE=mall_db_tmp
       - REDIS_HOST=redis
       - REDIS_PASSWORD=123456
+      - HOST_URL=http://localhost:3000
     depends_on:
       - mysql
       - redis
@@ -23,7 +24,7 @@ services:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=mall_db_tmp
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
