@@ -34,7 +34,8 @@ var (
 
 func Init() {
 	// 本地读取环境变量
-	file, err := ini.Load("./conf/config.ini")
+	//file, err := ini.Load("./conf/config.docker.ini")
+	file, err := ini.Load("conf/config.ini")
 	if err != nil {
 		panic(err)
 	}
