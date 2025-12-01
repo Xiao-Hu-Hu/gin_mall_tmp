@@ -10,6 +10,7 @@ import (
 	"gin_mall_tmp/pkg/util"
 	"gin_mall_tmp/serializer"
 	"strconv"
+	"sync"
 )
 
 type OrderPayService struct {
@@ -25,7 +26,14 @@ type OrderPayService struct {
 	Key       string  `json:"key" form:"key"` // 支付金额
 }
 
+// payLock 用于防止并发支付同一笔订单导致的数据错误
+var payLock sync.Mutex
+
 func (service *OrderPayService) PayDown(ctx context.Context, uId uint) serializer.Response {
+	// 加锁保证同一时刻只有一个支付流程在执行
+	payLock.Lock()
+	defer payLock.Unlock()
+
 	util.Encrypt.SetKey(service.Key)
 	code := e.Success
 	orderDao := dao.NewOrderDao(ctx)

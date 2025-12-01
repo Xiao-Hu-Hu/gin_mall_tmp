@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"gin_mall_tmp/model"
+
 	"gorm.io/gorm"
 )
 
@@ -33,12 +34,17 @@ func (dao *ProductDao) ListProductByCondition(condition map[string]interface{}, 
 }
 
 func (dao *ProductDao) SearchProduct(info string, page model.BasePage) (products []*model.Product, count int64, err error) {
-	err = dao.DB.Model(&model.Product{}).Where("title LIKE ? OR info LIKE ?", "%"+info+"%", "%"+info+"%").Count(&count).Error
+	// 支持按名称、标题、描述进行关键词模糊匹配
+	like := "%" + info + "%"
+	err = dao.DB.Model(&model.Product{}).
+		Where("name LIKE ? OR title LIKE ? OR info LIKE ?", like, like, like).
+		Count(&count).Error
 	if err != nil {
 		return
 	}
 
-	err = dao.DB.Model(&model.Product{}).Where("title LIKE ? OR info LIKE ?", "%"+info+"%", "%"+info+"%").
+	err = dao.DB.Model(&model.Product{}).
+		Where("name LIKE ? OR title LIKE ? OR info LIKE ?", like, like, like).
 		Offset((page.PageNum - 1) * (page.PageSize)).
 		Limit(page.PageSize).Find(&products).Error
 	return

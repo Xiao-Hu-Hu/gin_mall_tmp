@@ -2,7 +2,7 @@
   <div id="app">
     <header class="header">
       <div class="header-content">
-        <router-link to="/" class="logo">个人商城</router-link>
+        <router-link to="/" class="logo">胡队的袜子铺</router-link>
         <nav class="nav">
           <router-link to="/">首页</router-link>
           <router-link to="/products">商品</router-link>

@@ -9,7 +9,7 @@
         
         <div class="form-group">
           <label>用户名</label>
-          <input :value="user?.user_name" type="text" disabled />
+          <input :value="user?.username" type="text" disabled />
         </div>
         
         <div class="form-group">
@@ -166,8 +166,8 @@ const getAvatarUrl = (avatar) => {
   if (avatar.startsWith('http')) {
     return avatar
   }
-  // 否则拼接完整URL
-  return `http://localhost:3000/static/imgs/avatar/${avatar}`
+  // 否则拼接完整URL（Docker 部署下使用 3000 端口提供静态资源）
+  return `http://8.137.53.3:3000/static/imgs/avatar/${avatar}`
 }
 
 onMounted(() => {

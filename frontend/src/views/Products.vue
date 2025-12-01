@@ -10,7 +10,7 @@
       <div v-else-if="products.length === 0" class="empty">暂无商品</div>
       <div v-else class="grid">
         <div v-for="product in products" :key="product.id" class="product-card" @click="goToProduct(product.id)">
-          <img :src="product.img_path" :alt="product.name" />
+          <img :src="getProductImage(product.img_path)" :alt="product.name" />
           <div class="product-card-content">
             <div class="product-card-title">{{ product.name }}</div>
             <div class="product-card-price">
@@ -34,6 +34,15 @@ const router = useRouter()
 const products = ref([])
 const loading = ref(true)
 const searchKeyword = ref('')
+
+const normalizeImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  // 后端静态资源由 Go 服务在 3000 端口提供
+  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+}
+
+const getProductImage = (url) => normalizeImageUrl(url)
 
 const fetchProducts = async () => {
   loading.value = true

@@ -15,6 +15,10 @@
             <input v-model="form.nick_name" type="text" required />
           </div>
           <div class="form-group">
+            <label>邮箱</label>
+            <input v-model="form.email" type="email" required placeholder="请输入常用邮箱" />
+          </div>
+          <div class="form-group">
             <label>密码</label>
             <input v-model="form.password" type="password" required />
           </div>
@@ -45,6 +49,7 @@ const router = useRouter()
 const form = ref({
   user_name: '',
   nick_name: '',
+  email: '',
   password: '',
   key: ''
 })

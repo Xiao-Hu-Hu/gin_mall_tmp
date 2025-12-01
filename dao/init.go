@@ -2,13 +2,14 @@ package dao
 
 import (
 	"context"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/dbresolver"
-	"time"
 )
 
 var _db *gorm.DB
@@ -20,22 +21,33 @@ func Database(connRead, connWrite string) {
 	} else {
 		ormlogger = logger.Default
 	}
-	db, err := gorm.Open(mysql.New(mysql.Config{
-		DSN:                       connRead,
-		DefaultStringSize:         256,  // String类型默认字段长度
-		DisableDatetimePrecision:  true, //进制datetime精度，mysql 5.6之前的数据库不支持
-		DontSupportRenameIndex:    true, //重新命名索引，就要把索引先删除再重建，mysql 5.7 不支持
-		DontSupportRenameColumn:   true, // 用change重命名列，mysql 8 之前的数据库不支持
-		SkipInitializeWithVersion: false,
-	}), &gorm.Config{
-		Logger: ormlogger,
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-	})
+	// 增加重试机制，避免 MySQL 尚未完全启动时直接 panic
+	var (
+		db  *gorm.DB
+		err error
+	)
+	for i := 0; i < 10; i++ {
+		db, err = gorm.Open(mysql.New(mysql.Config{
+			DSN:                       connRead,
+			DefaultStringSize:         256,  // String类型默认字段长度
+			DisableDatetimePrecision:  true, // 禁用 datetime 精度，mysql 5.6 之前的数据库不支持
+			DontSupportRenameIndex:    true, // 重新命名索引，就要把索引先删除再重建，mysql 5.7 不支持
+			DontSupportRenameColumn:   true, // 用 change 重命名列，mysql 8 之前的数据库不支持
+			SkipInitializeWithVersion: false,
+		}), &gorm.Config{
+			Logger: ormlogger,
+			NamingStrategy: schema.NamingStrategy{
+				SingularTable: true,
+			},
+		})
+		if err == nil {
+			break
+		}
+		// 等待 MySQL 服务就绪
+		time.Sleep(2 * time.Second)
+	}
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	sqlDB, _ := db.DB()

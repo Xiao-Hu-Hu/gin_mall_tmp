@@ -64,11 +64,11 @@
           <div style="display: flex; justify-content: space-between; align-items: start;">
             <div>
               <h3>订单号: {{ order.order_num }}</h3>
-              <p>商品: {{ order.product.name }}</p>
+              <p>商品: {{ order.product_name }}</p>
               <p>数量: {{ order.num }}</p>
-              <p>金额: ¥{{ order.money }}</p>
+              <p>金额: ¥{{ order.total_money }}</p>
               <p>状态: {{ getOrderStatus(order.type) }}</p>
-              <p>创建时间: {{ order.created_at }}</p>
+              <p>创建时间: {{ order.create_at }}</p>
             </div>
             <div>
               <button v-if="order.type === 1" @click="payOrder(order)" class="btn btn-success">支付</button>
@@ -137,7 +137,8 @@ const fetchAddresses = async () => {
   try {
     const res = await api.get('/addresses')
     if (res.status === 200) {
-      addresses.value = res.data?.item || []
+      // 后端直接返回地址数组
+      addresses.value = res.data?.item || res.data || []
     }
   } catch (error) {
     console.error('获取地址列表失败:', error)

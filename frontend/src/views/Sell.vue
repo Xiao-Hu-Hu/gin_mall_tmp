@@ -19,7 +19,7 @@
             <select v-model.number="form.category_id" required>
               <option value="">请选择分类</option>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                {{ cat.name }}
+                {{ cat.category_name }}
               </option>
             </select>
           </div>
@@ -79,7 +79,7 @@ const fetchCategories = async () => {
   try {
     const res = await api.get('/categories')
     if (res.status === 200) {
-      categories.value = res.data?.item || []
+      categories.value = res.data?.item || res.data || []
     }
   } catch (error) {
     console.error('获取分类失败:', error)

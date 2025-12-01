@@ -4,9 +4,9 @@
       <div v-if="loading" class="loading">加载中...</div>
       <div v-else-if="product" class="product-detail-content">
         <div class="product-images">
-          <img :src="product.img_path" :alt="product.name" />
+          <img :src="getProductImage(product.img_path)" :alt="product.name" />
           <div v-if="productImages.length > 0" class="product-images-list">
-            <img v-for="(img, index) in productImages" :key="index" :src="img.img_path" :alt="product.name" />
+            <img v-for="(img, index) in productImages" :key="index" :src="getProductImage(img.img_path)" :alt="product.name" />
           </div>
         </div>
         <div class="product-info">
@@ -52,6 +52,14 @@ const product = ref(null)
 const productImages = ref([])
 const loading = ref(true)
 const quantity = ref(1)
+
+const normalizeImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+}
+
+const getProductImage = (url) => normalizeImageUrl(url)
 
 const fetchProduct = async () => {
   try {

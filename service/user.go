@@ -9,16 +9,18 @@ import (
 	"gin_mall_tmp/pkg/e"
 	"gin_mall_tmp/pkg/util"
 	"gin_mall_tmp/serializer"
-	"gopkg.in/mail.v2"
 	"mime/multipart"
 	"strings"
 	"time"
+
+	"gopkg.in/mail.v2"
 )
 
 // 用户服务层
 type UserService struct {
 	NickName string `json:"nick_name" form:"nick_name"`
 	UserName string `json:"user_name" form:"user_name"`
+	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
 	Key      string `json:"key" form:"key"` //密钥 前端验证
 }
@@ -53,6 +55,16 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 		}
 	}
 
+	// 基础邮箱校验：必填
+	if service.Email == "" {
+		code = e.InvalidParams
+		return serializer.Response{
+			Status: code,
+			Msg:    "邮箱不能为空",
+			Error:  "email is empty",
+		}
+	}
+
 	// 初始金额10000 ---> 密文存储 对称加密
 	util.Encrypt.SetKey(service.Key)
 
@@ -66,6 +78,22 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 			Msg:    e.GetMsg(code),
 		}
 	}
+	// 根据邮箱判断是否已被注册
+	if _, exist, err := userDao.ExistOrNotByEmail(service.Email); err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	} else if exist {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    "邮箱已被注册",
+		}
+	}
+
 	if exist {
 		code = e.ErrorExistUser
 		return serializer.Response{
@@ -76,6 +104,7 @@ func (service *UserService) Register(ctx context.Context) serializer.Response {
 	user = model.User{
 		UserName: service.UserName,
 		NickName: service.NickName,
+		Email:    service.Email,
 		Status:   model.Avtive,
 		Avatar:   "avatar.JPG",
 		Money:    util.Encrypt.AesEncoding("10000"), // 初始金额的加密

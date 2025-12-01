@@ -7,12 +7,12 @@
       <div v-else>
         <div v-for="cart in carts" :key="cart.id" class="card">
           <div style="display: flex; gap: 20px; align-items: center;">
-            <img :src="cart.product.img_path" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" />
+            <img :src="getCartImage(cart.img_path)" style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;" />
             <div style="flex: 1;">
-              <h3>{{ cart.product.name }}</h3>
-              <p>价格: ¥{{ cart.product.discount_price || cart.product.price }}</p>
+              <h3>{{ cart.name }}</h3>
+              <p>价格: ¥{{ cart.discount_price || cart.price }}</p>
               <p>数量: {{ cart.num }}</p>
-              <p>小计: ¥{{ (parseFloat(cart.product.discount_price || cart.product.price) * cart.num).toFixed(2) }}</p>
+              <p>小计: ¥{{ (parseFloat(cart.discount_price || cart.price) * cart.num).toFixed(2) }}</p>
             </div>
             <div>
               <input v-model.number="cart.num" type="number" min="1" style="width: 60px; margin-right: 10px;" />
@@ -41,17 +41,26 @@ const loading = ref(true)
 
 const totalPrice = computed(() => {
   return carts.value.reduce((sum, cart) => {
-    const price = parseFloat(cart.product.discount_price || cart.product.price)
+    const price = parseFloat(cart.discount_price || cart.price)
     return sum + price * cart.num
   }, 0)
 })
+
+const normalizeImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+}
+
+const getCartImage = (url) => normalizeImageUrl(url)
 
 const fetchCarts = async () => {
   loading.value = true
   try {
     const res = await api.post('/carts')
     if (res.status === 200) {
-      carts.value = res.data?.item || []
+      // 后端直接返回列表，而不是 {item,total}
+      carts.value = res.data?.item || res.data || []
     }
   } catch (error) {
     console.error('获取购物车失败:', error)

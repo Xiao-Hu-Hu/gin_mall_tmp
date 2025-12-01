@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"gin_mall_tmp/model"
+
 	"gorm.io/gorm"
 )
 
@@ -28,6 +29,18 @@ func (dao *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exi
 			return nil, false, nil
 		}
 		fmt.Println("数据库查询有误", err)
+		return nil, false, err
+	}
+	return user, true, nil
+}
+
+// ExistOrNotByEmail 根据邮箱判断是否已经存在该用户
+func (dao *UserDao) ExistOrNotByEmail(email string) (user *model.User, exist bool, err error) {
+	err = dao.DB.Model(&model.User{}).Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, false, nil
+		}
 		return nil, false, err
 	}
 	return user, true, nil

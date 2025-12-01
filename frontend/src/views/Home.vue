@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="container">
-      <h1>欢迎来到个人商城</h1>
+      <h1>欢迎来到胡队的袜子铺</h1>
       <div v-if="carousels.length > 0" class="carousel">
         <img v-for="(item, index) in carousels" :key="index" :src="item.img_path" alt="轮播图" />
       </div>
@@ -10,7 +10,7 @@
       <div v-else-if="products.length === 0" class="empty">暂无商品</div>
       <div v-else class="grid">
         <div v-for="product in products" :key="product.id" class="product-card" @click="goToProduct(product.id)">
-          <img :src="product.img_path" :alt="product.name" />
+          <img :src="getProductImage(product.img_path)" :alt="product.name" />
           <div class="product-card-content">
             <div class="product-card-title">{{ product.name }}</div>
             <div class="product-card-price">
@@ -33,6 +33,17 @@ const router = useRouter()
 const products = ref([])
 const carousels = ref([])
 const loading = ref(true)
+
+const normalizeImageUrl = (url, isProduct = true) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  if (!isProduct) {
+    return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+  }
+  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+}
+
+const getProductImage = (url) => normalizeImageUrl(url, true)
 
 const fetchProducts = async () => {
   try {
