@@ -2,9 +2,10 @@ package conf
 
 import (
 	"gin_mall_tmp/dao"
-	"gopkg.in/ini.v1"
 	"os"
 	"strings"
+
+	"gopkg.in/ini.v1"
 )
 
 var (
@@ -34,9 +35,14 @@ var (
 )
 
 func Init() {
-	// 本地读取环境变量
-	//file, err := ini.Load("./conf/config.docker.ini")
-	file, err := ini.Load("conf/config.ini")
+	// 优先检查Docker环境变量，如果存在则使用Docker配置
+	var file *ini.File
+	var err error
+	if os.Getenv("DOCKER_ENV") == "true" {
+		file, err = ini.Load("conf/config.docker.ini")
+	} else {
+		file, err = ini.Load("conf/config.ini")
+	}
 	if err != nil {
 		panic(err)
 	}

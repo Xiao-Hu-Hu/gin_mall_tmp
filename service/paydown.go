@@ -72,7 +72,7 @@ func (service *OrderPayService) PayDown(ctx context.Context, uId uint) serialize
 		}
 	}
 	finMoney := fmt.Sprintf("%f", moneyFloat-money)
-	user.Money = util.Encrypt.AesEncoding(user.Money)
+	user.Money = util.Encrypt.AesEncoding(finMoney)
 
 	userDao = dao.NewUserDaoByDB(userDao.DB)
 	err = userDao.UpdateUserById(uId, user)

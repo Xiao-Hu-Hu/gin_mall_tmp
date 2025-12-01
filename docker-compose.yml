@@ -1,23 +1,38 @@
 version: '3.8'
 services:
+  # 后端服务
   app:
     build: .
     ports:
       - "3000:3000"
     environment:
+      - DOCKER_ENV=true
       - MYSQL_HOST=mysql
       - MYSQL_USER=root
       - MYSQL_PASSWORD=123456
       - MYSQL_DATABASE=mall_db_tmp
       - REDIS_HOST=redis
       - REDIS_PASSWORD=123456
-      - HOST_URL=http://localhost:3000
+      - HOST_URL=http://8.137.53.3:3000
     depends_on:
       - mysql
       - redis
     volumes:
       - ./static:/root/static
+    networks:
+      - mall-network
 
+  # 前端服务
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - mall-network
+
+  # MySQL数据库
   mysql:
     image: mysql:8.0
     environment:
@@ -27,7 +42,10 @@ services:
       - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - mall-network
 
+  # Redis缓存
   redis:
     image: redis:7-alpine
     command: redis-server --requirepass 123456
@@ -35,7 +53,13 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - mall-network
 
 volumes:
   mysql_data:
   redis_data:
+
+networks:
+  mall-network:
+    driver: bridge

@@ -26,8 +26,8 @@ WORKDIR /root/
 
 # 从构建阶段复制可执行文件
 COPY --from=builder /app/main .
-# 复制 Docker 配置文件
-COPY --from=builder /app/conf/config.docker.ini ./conf/config.ini
+# 复制 Docker 配置文件（Docker环境使用config.docker.ini）
+COPY --from=builder /app/conf/config.docker.ini ./conf/config.docker.ini
 # 复制静态文件目录
 COPY --from=builder /app/static ./static
 
