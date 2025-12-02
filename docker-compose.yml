@@ -31,6 +31,8 @@ services:
       - app
     networks:
       - mall-network
+    environment:
+      - VITE_API_BASE_URL=http://8.137.53.3:3000
 
   # MySQL数据库
   mysql:

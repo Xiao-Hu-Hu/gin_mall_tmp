@@ -1,7 +1,12 @@
 import axios from 'axios'
 
+// 获取环境变量中的API基础URL，如果没有则使用默认值
+const baseURL = import.meta.env.VITE_API_BASE_URL ? 
+  `${import.meta.env.VITE_API_BASE_URL}/api/v1` : 
+  '/api/v1'
+
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: baseURL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'

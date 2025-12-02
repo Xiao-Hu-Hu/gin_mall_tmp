@@ -45,8 +45,16 @@ func BuildCarts(ctx context.Context, items []*model.Cart) (carts []Cart) {
 	productDao := dao.NewProductDao(ctx)
 	bossDao := dao.NewUserDao(ctx)
 	for _, item := range items {
+		// 跳过无效的商品ID（0或空值）
+		if item.ProductId == 0 {
+			continue
+		}
 		product, err := productDao.GetProductById(item.ProductId)
 		if err != nil {
+			continue
+		}
+		// 跳过无效的老板ID
+		if item.BossId == 0 {
 			continue
 		}
 		boss, err := bossDao.GetUserById(item.BossId)

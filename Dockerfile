@@ -7,6 +7,9 @@ WORKDIR /app
 # 复制依赖文件
 COPY go.mod go.sum ./
 
+# 设置Go模块代理（使用阿里云镜像）
+ENV GOPROXY=https://goproxy.cn,direct
+
 # 下载依赖
 RUN go mod download
 
@@ -26,8 +29,12 @@ WORKDIR /root/
 
 # 从构建阶段复制可执行文件
 COPY --from=builder /app/main .
+# 创建配置目录
+RUN mkdir -p conf
 # 复制 Docker 配置文件（Docker环境使用config.docker.ini）
 COPY --from=builder /app/conf/config.docker.ini ./conf/config.docker.ini
+# 同时复制默认配置文件作为备用
+COPY --from=builder /app/conf/config.docker.ini ./conf/config.ini
 # 复制静态文件目录
 COPY --from=builder /app/static ./static
 

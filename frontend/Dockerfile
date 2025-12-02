@@ -12,6 +12,9 @@ RUN npm install
 # 复制源代码
 COPY . .
 
+# 复制生产环境变量
+COPY .env.production .env
+
 # 构建应用
 RUN npm run build
 

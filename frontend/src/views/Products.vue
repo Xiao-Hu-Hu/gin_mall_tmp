@@ -38,8 +38,9 @@ const searchKeyword = ref('')
 const normalizeImageUrl = (url) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  // 后端静态资源由 Go 服务在 3000 端口提供
-  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+  // 在Docker环境中，静态资源通过Nginx代理，使用相对路径
+  if (url.startsWith('/static')) return url
+  return `/static/imgs/product/${url}`
 }
 
 const getProductImage = (url) => normalizeImageUrl(url)

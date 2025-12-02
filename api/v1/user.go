@@ -3,9 +3,10 @@ package v1
 import (
 	"gin_mall_tmp/pkg/util"
 	"gin_mall_tmp/service"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // user 路由处理
@@ -159,6 +160,32 @@ func UploadAvatar(c *gin.Context) {
 }
 
 // email 路由处理
+
+// 发送邮箱验证码
+func SendEmailVerifyCode(c *gin.Context) {
+	var emailVerify service.EmailVerifyService
+
+	if err := c.ShouldBind(&emailVerify); err == nil {
+		res := emailVerify.SendVerifyCode(c.Request.Context())
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Infoln("SendEmailVerifyCode err: ", err)
+	}
+}
+
+// 邮箱验证码注册
+func EmailRegister(c *gin.Context) {
+	var emailRegister service.EmailRegisterService
+
+	if err := c.ShouldBind(&emailRegister); err == nil {
+		res := emailRegister.RegisterWithEmail(c.Request.Context())
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Infoln("EmailRegister err: ", err)
+	}
+}
 
 // 需要保护的
 func SendEmail(c *gin.Context) {

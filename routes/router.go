@@ -21,8 +21,10 @@ func NewRouter() *gin.Engine {
 		})
 
 		//用户操作
-		v1.POST("user/register", api.UserRegister) //注册
-		v1.POST("user/login", api.UserLogin)       //登录
+		v1.POST("user/register", api.UserRegister)           //注册
+		v1.POST("user/login", api.UserLogin)                 //登录
+		v1.POST("user/send-verify-code", api.SendEmailVerifyCode) //发送邮箱验证码
+		v1.POST("user/email-register", api.EmailRegister)        //邮箱验证码注册
 
 		// 轮播图
 		v1.GET("carousels", api.ListCarousel) //展示轮播图

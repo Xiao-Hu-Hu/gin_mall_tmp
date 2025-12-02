@@ -49,7 +49,9 @@ const totalPrice = computed(() => {
 const normalizeImageUrl = (url) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  return `http://8.137.53.3:3000${url.startsWith('/static') ? url : '/static/imgs/product/' + url}`
+  // 在Docker环境中，静态资源通过Nginx代理，使用相对路径
+  if (url.startsWith('/static')) return url
+  return `/static/imgs/product/${url}`
 }
 
 const getCartImage = (url) => normalizeImageUrl(url)
