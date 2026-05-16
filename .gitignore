@@ -1,0 +1,56 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go build cache
+.gocache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Logs
+logs/
+service/ai/logs/
+
+# Output
+out/
+
+# Claude Code
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend build output
+frontend/dist/
+frontend/node_modules/
+
+# Test/demo images (product & avatar)
+static/imgs/product/boss1/
+static/imgs/product/boss6/
+static/imgs/product/boss7/
+static/imgs/avatar/user1/
+static/imgs/avatar/user2/
+static/imgs/avatar/user6/
+static/imgs/avatar/user7/
+
+# Milvus Docker data
+milvus_deps/
+
+# Dev docs (not part of the project)
+AI_CUSTOMER_SERVICE_DEV_PROCESS.md
+POSTMAN_TEST_EXAMPLES.md
+RabbitMQ_Postman_Test.md
+第一阶段实现方案解释.md
+第三阶段实验报告.md
+第三阶段详细方案.md
